@@ -1,0 +1,70 @@
+id: teleconsultationWorkflow
+version: '1.0'
+spec: '0.8'
+name: Teleconsultation Workflow
+description: 'description'
+states:
+  - name: PaediatricianChosen
+    type: event
+    onEvents:
+      - eventRefs:
+          - ChoosePaediatrician
+    transition:
+      nextState: ConsultationPaymentRequested
+
+  - name: ConsultationPaymentRequested
+    type: operation
+    actions:
+      - function:
+          name: RequestPayment
+    transition:
+      nextState: PaymentSuccessful
+    onErrors:
+      - errorRef: PaymentFailed
+        transition:
+          nextState: HandlePaymentFailure
+
+  - name: HandlePaymentFailure
+    type: operation
+    actions:
+      - function:
+          name: HandlePaymentFailure
+    end: true
+
+  - name: PaymentSuccessful
+    type: event
+    onEvents:
+      - eventRefs:
+          - ProcessPayment
+    transition:
+      nextState: ConsultationPaid
+
+  - name: ConsultationPaid
+    type: operation
+    actions:
+      - function:
+          name: ScheduleConsultation
+    transition:
+      nextState: SendNotification
+
+  - name: SendNotification
+    type: operation
+    actions:
+      - function:
+          name: SendNotification
+    end: true
+
+events:
+  - name: ChoosePaediatrician
+    type: event
+    source: TeleconsultationService
+    kind: produced
+
+  - name: ProcessPayment
+    type: event
+    source: PaymentService
+    kind: produced
+
+errors:
+  - name: PaymentFailed
+    code: PaymentFailed
