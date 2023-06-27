@@ -1,0 +1,24 @@
+id: 'familyOnboarding'
+version: 'MVP'
+specVersion: '0.8'
+name: 'Family onboarding workflow'
+description: 'Registration of new User in Amia'
+start: 'CreateUser'
+functions:
+  - name: 'uniqueFunctionName'
+    operation: 'localhost#operation'
+    type: 'rest'
+events:
+  - name: 'Unique event name'
+    source: 'CloudEvent source'
+    type: 'CloudEvent type'
+states:
+  - name: 'CreateUser'
+    type: switch
+    eventConditions:
+    - eventRef: visaApprovedEvent
+      transition: HandleApprovedVisa
+    - eventRef: visaRejectedEvent
+      transition: HandleRejectedVisa
+    defaultCondition:
+      transition: HandleNoVisaDecision
